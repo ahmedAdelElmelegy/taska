@@ -8,7 +8,7 @@ class CircleCheckBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return isActive == true
+    return isActive == false
         ? CircleAvatar(
           radius: 12.r,
           backgroundColor: ColorManager.primary,

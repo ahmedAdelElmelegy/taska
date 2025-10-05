@@ -3,13 +3,22 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:taska/core/themes/colors.dart';
 
 class TaskCheckBox extends StatefulWidget {
-  const TaskCheckBox({super.key});
+  final void Function(bool? value)? onChanged;
+  final bool? isActive;
+
+  const TaskCheckBox({super.key, this.onChanged, this.isActive});
 
   @override
   State<TaskCheckBox> createState() => _TaskCheckBoxState();
 }
 
 class _TaskCheckBoxState extends State<TaskCheckBox> {
+  @override
+  void initState() {
+    super.initState();
+    isChecked = widget.isActive ?? false;
+  }
+
   bool isChecked = false;
   @override
   Widget build(BuildContext context) {
@@ -26,6 +35,7 @@ class _TaskCheckBoxState extends State<TaskCheckBox> {
         onChanged: (value) {
           setState(() {
             isChecked = value!;
+            widget.onChanged!(value);
           });
         },
       ),

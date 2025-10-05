@@ -1,18 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:table_calendar/table_calendar.dart';
+import 'package:taska/core/helper/extentions.dart';
 import 'package:taska/core/themes/style.dart';
 
 class CalendarPage extends StatefulWidget {
-  const CalendarPage({Key? key}) : super(key: key);
+  final void Function(DateTime)? onDateSelected;
+  const CalendarPage({super.key, this.onDateSelected});
 
   @override
   State<CalendarPage> createState() => _CalendarPageState();
 }
 
 class _CalendarPageState extends State<CalendarPage> {
-  DateTime _focusedDay = DateTime(2024, 12, 14); // Set initial focus
-  DateTime? _selectedDay = DateTime(2024, 12, 14); // Preselect 14th Dec
+  DateTime _focusedDay = DateTime.now(); // Set initial focus
+  DateTime? _selectedDay = DateTime.now(); // Preselect 14th Dec
 
   @override
   Widget build(BuildContext context) {
@@ -35,6 +37,10 @@ class _CalendarPageState extends State<CalendarPage> {
             _selectedDay = selectedDay;
             _focusedDay = focusedDay;
           });
+          if (widget.onDateSelected != null) {
+            widget.onDateSelected!(_selectedDay!);
+          }
+          pop();
         },
 
         headerStyle: HeaderStyle(

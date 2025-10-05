@@ -4,11 +4,11 @@ import 'package:taska/core/helper/app_constants.dart';
 import 'package:taska/core/helper/extentions.dart';
 import 'package:taska/core/helper/spacing.dart';
 import 'package:taska/core/themes/colors.dart';
-import 'package:taska/core/themes/style.dart';
 import 'package:taska/core/widgets/svg_icon.dart';
 import 'package:taska/core/widgets/text_pop.dart';
 import 'package:taska/features/home/widgets/project_list_view.dart';
 import 'package:taska/features/projects/search_screen.dart';
+import 'package:taska/features/projects/widgets/project_category.dart';
 
 class ProjectScreen extends StatefulWidget {
   const ProjectScreen({super.key});
@@ -34,7 +34,7 @@ class _ProjectScreenState extends State<ProjectScreen> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    TextPop(text: 'My Project'),
+                    TextPop(text: 'My Project', isBack: false),
                     Row(
                       children: [
                         GestureDetector(
@@ -95,71 +95,6 @@ class _ProjectScreenState extends State<ProjectScreen> {
               ],
             ),
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class ProjectCategory extends StatefulWidget {
-  const ProjectCategory({super.key});
-
-  @override
-  State<ProjectCategory> createState() => _ProjectCategoryState();
-}
-
-class _ProjectCategoryState extends State<ProjectCategory> {
-  static List<String> catList = [
-    'To-Do',
-    'In-Progress',
-    'Completed',
-    'Messages',
-  ];
-  int currentIndex = 0;
-  @override
-  Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      physics: BouncingScrollPhysics(),
-      child: Row(
-        children: List.generate(
-          catList.length,
-          (index) => GestureDetector(
-            onTap: () {
-              setState(() {
-                currentIndex = index;
-              });
-            },
-            child: ProjectBtn(
-              title: catList[index],
-              isActive: currentIndex == index,
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class ProjectBtn extends StatelessWidget {
-  final bool? isActive;
-  final String title;
-  const ProjectBtn({super.key, this.isActive = false, required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: EdgeInsets.only(right: 10.w),
-      padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
-      decoration: BoxDecoration(
-        color: isActive == true ? ColorManager.primary : Colors.transparent,
-        border: Border.all(color: ColorManager.primary, width: 2.w),
-        borderRadius: BorderRadius.circular(1000.r),
-      ),
-      child: Text(
-        title,
-        style: TextStyles.f16SemiBoldWhite.copyWith(
-          color: isActive == true ? Colors.white : ColorManager.primary,
         ),
       ),
     );

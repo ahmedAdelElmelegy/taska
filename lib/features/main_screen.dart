@@ -1,19 +1,27 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:taska/core/function/app_fun.dart';
 import 'package:taska/core/helper/app_constants.dart';
 import 'package:taska/core/helper/extentions.dart';
 import 'package:taska/core/helper/spacing.dart';
+import 'package:taska/core/helper/validator.dart';
 import 'package:taska/core/themes/colors.dart';
 import 'package:taska/core/widgets/custom_btn.dart';
 import 'package:taska/core/widgets/custom_text_field.dart';
 import 'package:taska/core/widgets/out_line_btn.dart';
 import 'package:taska/core/widgets/svg_icon.dart';
+import 'package:taska/data/bloc/group/group_cubit.dart';
+import 'package:taska/data/model/body/group_model.dart';
 import 'package:taska/features/chat/chat_screen.dart';
 import 'package:taska/features/home/home_screen.dart';
 import 'package:taska/features/profile/profile_screen.dart';
-import 'package:taska/features/projects/new_project_screen.dart';
 import 'package:taska/features/projects/project_screen.dart';
+import 'package:taska/features/projects/widgets/member_number.dart';
+import 'package:taska/features/projects/widgets/project_form.dart';
+import 'package:taska/features/teams/add_team.dart';
+import 'package:uuid/uuid.dart';
 
 class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
@@ -54,7 +62,9 @@ class _MainScreenState extends State<MainScreen> {
               child: GestureDetector(
                 onTap: _togglePopup,
                 child: Container(
-                  color: Colors.black.withOpacity(0.3), // Dimmed background
+                  color: Colors.black.withValues(
+                    alpha: 0.3,
+                  ), // Dimmed background
                 ),
               ),
             ),
@@ -71,7 +81,7 @@ class _MainScreenState extends State<MainScreen> {
         child: Container(
           color:
               _showPopup
-                  ? Colors.black.withOpacity(0.3)
+                  ? Colors.black.withValues(alpha: 0.3)
                   : Colors.white, // Dimmed background
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -162,24 +172,7 @@ class _MainScreenState extends State<MainScreen> {
                 defaultBottomSheet(
                   context,
                   title: 'New Project',
-                  child: Column(
-                    children: [
-                      CustomTextField(text: 'Project Name'),
-                      verticalSpace(24),
-                      CustomTextField(text: 'Visibility'),
-                      verticalSpace(24),
-                      PrimaryOutLineBtn(text: 'Add', height: 55.h),
-                      verticalSpace(18),
-                      CustomBtn(
-                        text: 'Create Project',
-                        onPressed: () {
-                          push(NewProjectScreen());
-                        },
-                        color: ColorManager.secondary,
-                      ),
-                      verticalSpace(36),
-                    ],
-                  ),
+                  child: ProjectForm(),
                 );
               },
             ),
@@ -192,21 +185,73 @@ class _MainScreenState extends State<MainScreen> {
                 defaultBottomSheet(
                   context,
                   title: 'New Group Chat',
-                  child: Column(
-                    children: [
-                      CustomTextField(text: 'Group Name'),
-                      verticalSpace(24),
+                  child: BlocBuilder<GroupCubit, GroupState>(
+                    builder: (context, state) {
+                      final ownerId =
+                          FirebaseAuth.instance.currentUser?.uid ?? '';
+                      final cubit = context.read<GroupCubit>();
+                      if (state is GroupLoading) {
+                        return Center(child: CircularProgressIndicator());
+                      } else if (state is GroupFailure) {
+                        return Center(child: Text(state.message));
+                      }
+                      return Column(
+                        children: [
+                          CustomTextField(
+                            validator:
+                                (value) => Validator.validateFullName(value),
+                            controller: cubit.nameController,
+                            text: 'Group Name',
+                          ),
 
-                      verticalSpace(24),
-                      PrimaryOutLineBtn(text: 'Add', height: 50.h),
-                      verticalSpace(18),
-                      CustomBtn(
-                        text: 'Create Group Chat',
-                        onPressed: () {},
-                        color: ColorManager.secondary,
-                      ),
-                      verticalSpace(36),
-                    ],
+                          verticalSpace(24),
+                          cubit.members.isNotEmpty
+                              ? Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  MemberNumber(
+                                    memberCount: cubit.members.length,
+                                  ),
+
+                                  GestureDetector(
+                                    onTap: () {
+                                      push(AddTeam());
+                                    },
+                                    child: SvgIcon(icon: AppIcons.addRounded),
+                                  ),
+                                ],
+                              )
+                              : PrimaryOutLineBtn(
+                                onPressed: () {
+                                  push(AddTeam(isGroup: true));
+                                },
+                                text: 'Add',
+                                height: 55.h,
+                              ),
+                          verticalSpace(18),
+                          CustomBtn(
+                            text: 'Create Group Chat',
+                            onPressed: () {
+                              cubit.createGroup(
+                                groupModel: GroupModel(
+                                  ownerId: ownerId,
+                                  id: Uuid().v4(),
+                                  members: cubit.members,
+                                  name: cubit.nameController.text,
+                                  memberIds: [ownerId, ...cubit.membersIds],
+
+                                  description: '',
+                                  imageUrl: '',
+                                ),
+                              );
+                            },
+                            color: ColorManager.secondary,
+                          ),
+                          verticalSpace(36),
+                        ],
+                      );
+                    },
                   ),
                 );
               },

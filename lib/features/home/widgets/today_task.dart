@@ -4,10 +4,12 @@ import 'package:taska/core/helper/app_constants.dart';
 import 'package:taska/core/helper/spacing.dart';
 import 'package:taska/core/widgets/svg_icon.dart';
 import 'package:taska/core/widgets/text_pop.dart';
-import 'package:taska/features/home/widgets/task_list_view.dart';
+import 'package:taska/data/bloc/project/project_cubit.dart';
+import 'package:taska/features/home/widgets/home_task_item.dart';
 
 class TodayTask extends StatelessWidget {
-  const TodayTask({super.key});
+  final ProjectCubit projectCubit;
+  const TodayTask({super.key, required this.projectCubit});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,16 @@ class TodayTask extends StatelessWidget {
                   ],
                 ),
                 verticalSpace(24),
-                TaskListView(),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: projectCubit.todayTasks.length,
+                  itemBuilder: (context, index) {
+                    return HomeTaskItem(
+                      taskModel: projectCubit.todayTasks[index],
+                    );
+                  },
+                ),
               ],
             ),
           ),

@@ -4,7 +4,7 @@ import 'package:taska/core/helper/spacing.dart';
 import 'package:taska/core/themes/colors.dart';
 import 'package:taska/core/themes/style.dart';
 import 'package:taska/core/widgets/svg_icon.dart';
-import 'package:taska/data/body/sub_task_model.dart';
+import 'package:taska/data/model/body/sub_task_model.dart';
 
 class SubTaskItem extends StatelessWidget {
   final SubTaskModel item;

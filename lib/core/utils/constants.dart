@@ -1,9 +1,7 @@
 import 'package:taska/core/helper/app_constants.dart';
-
-import 'package:taska/data/body/on_boarding_model.dart';
-import 'package:taska/data/body/profile_model.dart';
-import 'package:taska/data/body/sub_task_model.dart';
-import 'package:taska/features/fill_profile/widgets/profile_image.dart';
+import 'package:taska/data/model/body/on_boarding_model.dart';
+import 'package:taska/data/model/body/profile_model.dart';
+import 'package:taska/data/model/body/sub_task_model.dart';
 
 class Constants {
   static List<OnBoardingModel> onBoardingList = [

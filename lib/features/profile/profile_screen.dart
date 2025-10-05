@@ -1,121 +1,99 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
-import 'package:taska/core/helper/app_constants.dart';
 import 'package:taska/core/helper/spacing.dart';
 import 'package:taska/core/themes/colors.dart';
 import 'package:taska/core/themes/style.dart';
 import 'package:taska/core/utils/constants.dart';
 import 'package:taska/core/widgets/svg_icon.dart';
-import 'package:taska/features/profile/widget/vertical_div.dart';
+import 'package:taska/data/bloc/auth/auth_cubit.dart';
+import 'package:taska/data/bloc/group/group_cubit.dart';
+import 'package:taska/data/bloc/project/project_cubit.dart';
+import 'package:taska/features/fill_profile/widgets/profile_image.dart';
+import 'package:taska/features/profile/widget/profile_app_bar.dart';
+import 'package:taska/features/profile/widget/user_info_detaile.dart';
 
-class ProfileScreen extends StatelessWidget {
+class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
+
+  @override
+  State<ProfileScreen> createState() => _ProfileScreenState();
+}
+
+class _ProfileScreenState extends State<ProfileScreen> {
+  @override
+  void initState() {
+    super.initState();
+    AuthCubit.get(context).getCurrentUser();
+    ProjectCubit.get(
+      context,
+    ).getProjectByOwnerId(FirebaseAuth.instance.currentUser!.uid);
+    ProjectCubit.get(
+      context,
+    ).getTasksByOwnerId(FirebaseAuth.instance.currentUser!.uid);
+
+    context.read<GroupCubit>().getGroupsByOwnerId(
+      FirebaseAuth.instance.currentUser!.uid,
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 24.w),
-            child: Column(
-              children: [
-                verticalSpace(24),
-                Row(
+        child: BlocBuilder<AuthCubit, AuthState>(
+          builder: (context, state) {
+            final cubit = AuthCubit.get(context);
+            return SingleChildScrollView(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24.w),
+                child: Column(
                   children: [
-                    Image.asset(AppImages.logo2, height: 33.h, width: 33.w),
-                    horizontalSpace(10),
-                    Text('Profile', style: TextStyles.f24Bold),
-                    Spacer(),
-                    SvgIcon(icon: AppIcons.iconsMore),
-                  ],
-                ),
-                verticalSpace(24),
-                Stack(
-                  alignment: Alignment.bottomRight,
-                  children: [
-                    CircleAvatar(
-                      radius: 60.r,
-                      backgroundImage: AssetImage(AppImages.profile),
+                    verticalSpace(24),
+                    ProfileAppBar(),
+                    verticalSpace(24),
+                    ProfileImage(isEdit: true, user: cubit.user),
+                    verticalSpace(24),
+                    UserInfoDetaile(
+                      cubit: cubit,
+                      projectCubit: ProjectCubit.get(context),
                     ),
-                    Material(
-                      color: ColorManager.primary,
-                      borderRadius: BorderRadius.circular(50.r),
-                      child: Padding(
-                        padding: const EdgeInsets.all(4.0),
-                        child: SvgIcon(
-                          icon: AppIcons.edit,
-                          color: ColorManager.white,
+                    Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.only(bottom: 24),
+                          child: GestureDetector(
+                            onTap: () {
+                              cubit.logout();
+                            },
+                            child: Row(
+                              children: [
+                                SvgIcon(
+                                  icon: Constants.profileItem[5].icon,
+                                  color: ColorManager.lightError,
+                                ),
+                                horizontalSpace(8),
+                                Text(
+                                  Constants.profileItem[5].title,
+                                  style: TextStyles.f18Meduim.copyWith(
+                                    color: ColorManager.lightError,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ],
-                ),
-                verticalSpace(24),
-                Text('Daniel Austin', style: TextStyles.f22SemiBold),
-                verticalSpace(8),
-                Text('daniel_austin', style: TextStyles.f14Meduim),
-                verticalSpace(24),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  children: [
-                    Column(
-                      children: [
-                        Text('27', style: TextStyles.f24Bold),
-                        verticalSpace(8),
-                        Text('Projects', style: TextStyles.f18Meduim),
-                      ],
-                    ),
-                    VerticalDiv(),
-                    Column(
-                      children: [
-                        Text('27', style: TextStyles.f24Bold),
-                        verticalSpace(8),
-                        Text('Projects', style: TextStyles.f18Meduim),
-                      ],
-                    ),
-                    VerticalDiv(),
-                    Column(
-                      children: [
-                        Text('27', style: TextStyles.f24Bold),
-                        verticalSpace(8),
-                        Text('Projects', style: TextStyles.f18Meduim),
                       ],
                     ),
                   ],
                 ),
-                verticalSpace(18),
-                Divider(thickness: 1, color: ColorManager.lightGrey),
-                verticalSpace(40),
-                Column(
-                  children: List.generate(
-                    Constants.profileItem.length,
-                    (index) => Padding(
-                      padding: EdgeInsets.only(bottom: 24),
-                      child: Row(
-                        children: [
-                          SvgIcon(
-                            icon: Constants.profileItem[index].icon,
-                            // color:
-                            //     Constants.profileItem.length == index
-                            //         ? ColorManager.primary
-                            //         : ColorManager.grey,
-                          ),
-                          horizontalSpace(8),
-                          Text(
-                            Constants.profileItem[index].title,
-                            style: TextStyles.f18Meduim,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         ),
       ),
     );
   }
 }
+  // push(FillProfileScreen(isEdit: true));

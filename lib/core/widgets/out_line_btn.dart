@@ -21,9 +21,9 @@ class OutLineBtn extends StatelessWidget {
     return OutlinedButton(
       style: OutlinedButton.styleFrom(
         side: BorderSide(color: color ?? ColorManager.grey),
-        minimumSize: Size(double.infinity, 55.h),
+        minimumSize: Size(double.infinity, 50.h),
       ),
-      onPressed: () {},
+      onPressed: onPressed,
       child: Stack(
         alignment: Alignment.center,
         children: [
@@ -84,6 +84,7 @@ class PrimaryOutLineBtn extends StatelessWidget {
             text,
             style: TextStyles.f16SemiBoldPrimary,
             textAlign: TextAlign.center,
+            overflow: TextOverflow.ellipsis,
           ),
         ],
       ),

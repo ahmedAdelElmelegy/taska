@@ -3,26 +3,33 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:taska/core/helper/app_constants.dart';
 import 'package:taska/core/helper/spacing.dart';
 import 'package:taska/core/themes/style.dart';
+import 'package:taska/core/widgets/cached_network_image.dart';
+import 'package:taska/data/model/body/user_model.dart';
 
 class ProfileInfo extends StatelessWidget {
-  const ProfileInfo({super.key});
+  final UserModel userModel;
+  const ProfileInfo({super.key, required this.userModel});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        CircleAvatar(
-          radius: 30.r,
-
-          backgroundImage: AssetImage(AppImages.profile),
+        Container(
+          width: 60.w,
+          height: 60.h,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            // border: Border.all(color: ColorManager.primary, width: 2),
+          ),
+          child: CachedImage(image: AppImages.profileImage),
         ),
         horizontalSpace(20),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('Daniel Austin', style: TextStyles.f18SemiBold),
+            Text(userModel.fullName, style: TextStyles.f18SemiBold),
             verticalSpace(4),
-            Text('daniel_austin', style: TextStyles.f14Meduim),
+            Text(userModel.userName, style: TextStyles.f14Meduim),
           ],
         ),
       ],

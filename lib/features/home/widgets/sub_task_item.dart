@@ -2,11 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:taska/core/themes/colors.dart';
 import 'package:taska/core/themes/style.dart';
+import 'package:taska/data/model/body/sub_tasks_model.dart';
 import 'package:taska/features/home/widgets/task_check_box.dart';
 
-class TaskItem extends StatelessWidget {
-  const TaskItem({super.key});
+class SubTaskItem extends StatefulWidget {
+  final SubTasksModel subTasksModel;
+  const SubTaskItem({super.key, required this.subTasksModel});
 
+  @override
+  State<SubTaskItem> createState() => _SubTaskItemState();
+}
+
+class _SubTaskItemState extends State<SubTaskItem> {
+  bool isChecked = false;
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -27,15 +35,25 @@ class TaskItem extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text('Kickoff Meeting Project', style: TextStyles.f18SemiBold),
               Text(
-                'Today - 13.00 PM',
+                widget.subTasksModel.subTaskName,
+                style: TextStyles.f18SemiBold,
+              ),
+              Text(
+                widget.subTasksModel.time,
                 style: TextStyles.f14Regular.copyWith(color: ColorManager.grey),
               ),
             ],
           ),
 
-          TaskCheckBox(),
+          TaskCheckBox(
+            onChanged: (value) {
+              setState(() {
+                isChecked = value!;
+              });
+            },
+            isActive: widget.subTasksModel.status,
+          ),
         ],
       ),
     );

@@ -8,22 +8,24 @@ import 'package:taska/core/widgets/svg_icon.dart';
 
 class TextPop extends StatelessWidget {
   final String text;
-  const TextPop({super.key, required this.text});
+  final bool? isBack;
+  const TextPop({super.key, required this.text, this.isBack = true});
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        GestureDetector(
-          onTap: () {
-            pop();
-          },
-          child: SvgIcon(
-            icon: AppIcons.iconsArrowBack,
-            width: 24.w,
-            height: 24.h,
+        if (isBack == true)
+          GestureDetector(
+            onTap: () {
+              pop();
+            },
+            child: SvgIcon(
+              icon: AppIcons.iconsArrowBack,
+              width: 24.w,
+              height: 24.h,
+            ),
           ),
-        ),
         horizontalSpace(10),
         Text(text, style: TextStyles.f24Bold),
       ],

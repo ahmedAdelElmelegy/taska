@@ -17,6 +17,10 @@ class CustomTextField extends StatelessWidget {
   final FocusNode? focusNode;
   final AutovalidateMode? autovalidateMode;
   final Color? color;
+  final Key? formKey;
+  final void Function()? onTap;
+  final bool? readOnly;
+  final bool? obsecure;
 
   const CustomTextField({
     super.key,
@@ -34,28 +38,33 @@ class CustomTextField extends StatelessWidget {
     this.focusNode,
     this.autovalidateMode,
     this.color,
+    this.formKey,
+    this.onTap,
+    this.readOnly,
+    this.obsecure,
   });
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: 56.h,
-      child: TextFormField(
-        controller: controller,
-        onChanged: onChanged,
-        onSaved: onSaved,
-        onFieldSubmitted: onFieldSubmitted,
-        decoration: InputDecoration(
-          fillColor: color ?? ColorManager.field,
-          filled: true,
-          hintText: text,
-
-          prefixIcon: prefixIcon,
-          suffixIcon: suffixIcon,
-          border: outlinBorder(false),
-          enabledBorder: outlinBorder(true),
-          focusedBorder: outlinBorder(false),
-        ),
+    return TextFormField(
+      onTap: onTap,
+      readOnly: readOnly ?? false,
+      controller: controller,
+      obscureText: obsecure ?? false,
+      onChanged: onChanged,
+      onSaved: onSaved,
+      validator: validator,
+      onFieldSubmitted: onFieldSubmitted,
+      decoration: InputDecoration(
+        fillColor: color ?? ColorManager.field,
+        filled: true,
+        hintText: text,
+        contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+        prefixIcon: prefixIcon,
+        suffixIcon: suffixIcon,
+        border: outlinBorder(false),
+        enabledBorder: outlinBorder(true),
+        focusedBorder: outlinBorder(false),
       ),
     );
   }

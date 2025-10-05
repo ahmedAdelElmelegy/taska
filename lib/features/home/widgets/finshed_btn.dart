@@ -1,13 +1,34 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:taska/core/themes/colors.dart';
 import 'package:taska/core/themes/style.dart';
+import 'package:taska/data/bloc/project/project_cubit.dart';
+import 'package:taska/data/model/body/project_model.dart';
 
-class FinshedBtn extends StatelessWidget {
-  const FinshedBtn({super.key});
+class FinshedBtn extends StatefulWidget {
+  final ProjectModel? project;
+
+  const FinshedBtn({super.key, this.project});
+
+  @override
+  State<FinshedBtn> createState() => _FinshedBtnState();
+}
+
+class _FinshedBtnState extends State<FinshedBtn> {
+  @override
+  void initState() {
+    super.initState();
+    final projectCubit = context.read<ProjectCubit>();
+    projectCubit.getTasksForProject(widget.project?.id ?? '');
+  }
 
   @override
   Widget build(BuildContext context) {
+    final projectCubit = context.read<ProjectCubit>();
+    final tasks = projectCubit.tasksByProject[widget.project?.id ?? ''] ?? [];
+    final total = tasks.length;
+    final completed = tasks.where((t) => t.isCompleted ?? false).length;
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h),
       decoration: BoxDecoration(
@@ -15,8 +36,8 @@ class FinshedBtn extends StatelessWidget {
         gradient: LinearGradient(
           colors: [
             ColorManager.white,
-            ColorManager.primary,
-            ColorManager.primary,
+            Color(widget.project?.color ?? ColorManager.primary.value),
+            Color(widget.project?.color ?? ColorManager.primary.value),
           ],
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
@@ -24,7 +45,7 @@ class FinshedBtn extends StatelessWidget {
       ),
 
       child: Text(
-        '80/90',
+        '$completed/$total',
         style: TextStyles.f14Regular.copyWith(color: Colors.white),
       ),
     );

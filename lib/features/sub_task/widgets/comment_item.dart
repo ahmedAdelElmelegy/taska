@@ -1,19 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:taska/core/function/get_duration.dart';
 import 'package:taska/core/helper/app_constants.dart';
 import 'package:taska/core/helper/spacing.dart';
 import 'package:taska/core/themes/colors.dart';
 import 'package:taska/core/themes/style.dart';
 import 'package:taska/core/widgets/svg_icon.dart';
+import 'package:taska/data/model/comment_model.dart';
 
 class CommentItem extends StatelessWidget {
-  const CommentItem({super.key});
+  final CommentModel? commentModel;
+  const CommentItem({super.key, this.commentModel});
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: EdgeInsets.symmetric(vertical: 12.h),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
@@ -25,9 +29,12 @@ class CommentItem extends StatelessWidget {
               Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Andrew Liam', style: TextStyles.f18SemiBold),
                   Text(
-                    'andrw_liam',
+                    commentModel!.userModel.fullName,
+                    style: TextStyles.f18SemiBold,
+                  ),
+                  Text(
+                    commentModel!.userModel.userName,
                     style: TextStyles.f14Regular.copyWith(
                       color: ColorManager.grey,
                     ),
@@ -39,10 +46,7 @@ class CommentItem extends StatelessWidget {
             ],
           ),
           verticalSpace(12),
-          Text(
-            'l’ve wireframed the app in figma ,but i still need to add a few more things.',
-            style: TextStyles.f14Regular,
-          ),
+          Text(commentModel!.message, style: TextStyles.f14Regular),
           verticalSpace(12),
           Row(
             children: [
@@ -50,13 +54,19 @@ class CommentItem extends StatelessWidget {
                 children: [
                   SvgIcon(icon: AppIcons.heart),
                   horizontalSpace(4),
-                  Text('1', style: TextStyles.f14Regular),
+                  Text(
+                    commentModel!.likes!.length.toString(),
+                    style: TextStyles.f14Regular,
+                  ),
                 ],
               ),
               horizontalSpace(24),
               Text('Reply', style: TextStyles.f14Regular),
               horizontalSpace(24),
-              Text('3 hours ago', style: TextStyles.f14Regular),
+              Text(
+                getDuration(commentModel!.createdAt.toString()),
+                style: TextStyles.f14Regular,
+              ),
             ],
           ),
         ],

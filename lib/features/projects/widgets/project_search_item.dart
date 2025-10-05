@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:taska/core/themes/style.dart';
+import 'package:taska/data/model/body/project_model.dart';
 
 import '../../../core/helper/app_constants.dart';
 import '../../../core/themes/colors.dart';
 import '../../../core/widgets/svg_icon.dart' show SvgIcon;
 
 class ProjectSearchItem extends StatelessWidget {
-  const ProjectSearchItem({super.key});
+  final ProjectModel projectModel;
+  const ProjectSearchItem({super.key, required this.projectModel});
 
   @override
   Widget build(BuildContext context) {
@@ -16,7 +18,7 @@ class ProjectSearchItem extends StatelessWidget {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text('NFT Project App', style: TextStyles.f18Meduim),
+          Text(projectModel.name, style: TextStyles.f18Meduim),
           SvgIcon(icon: AppIcons.iconsClear, color: ColorManager.grey),
         ],
       ),

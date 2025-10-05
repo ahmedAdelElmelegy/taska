@@ -5,12 +5,14 @@ import 'package:taska/core/helper/spacing.dart';
 import 'package:taska/core/themes/colors.dart';
 import 'package:taska/core/themes/style.dart';
 import 'package:taska/core/widgets/svg_icon.dart';
+import 'package:taska/data/model/body/project_model.dart';
 import 'package:taska/features/home/widgets/finshed_btn.dart';
 import 'package:taska/features/home/widgets/slider_widget.dart';
 
 class ProjectItem extends StatelessWidget {
   final bool isImageView;
-  const ProjectItem({super.key, required this.isImageView});
+  final ProjectModel? project;
+  const ProjectItem({super.key, required this.isImageView, this.project});
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +29,9 @@ class ProjectItem extends StatelessWidget {
       ),
       child: Column(
         children: [
-          isImageView
+          isImageView &&
+                  project!.coverImage != null &&
+                  project!.coverImage!.isNotEmpty
               ? Container(
                 height: 150.h,
                 width: double.infinity,
@@ -37,7 +41,7 @@ class ProjectItem extends StatelessWidget {
                     topRight: Radius.circular(24.r),
                   ),
                   image: DecorationImage(
-                    image: AssetImage(AppImages.project),
+                    image: NetworkImage(project!.coverImage!),
                     fit: BoxFit.cover,
                   ),
                 ),
@@ -57,16 +61,15 @@ class ProjectItem extends StatelessWidget {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      'Tiki Mobile App Project',
-                      style: TextStyles.f22SemiBold,
-                    ),
+                    Text(project!.name, style: TextStyles.f22SemiBold),
                     SvgIcon(icon: AppIcons.iconsMore),
                   ],
                 ),
                 verticalSpace(18),
-                FinshedBtn(),
-                SliderWidget(),
+                FinshedBtn(project: project!),
+                project?.deadline != null
+                    ? SliderWidget(project: project!)
+                    : const SizedBox(),
               ],
             ),
           ),

@@ -4,7 +4,8 @@ import 'package:taska/core/helper/app_constants.dart';
 import 'package:taska/core/themes/colors.dart';
 
 class ProjectPerson extends StatelessWidget {
-  const ProjectPerson({super.key});
+  final String? image;
+  const ProjectPerson({super.key, this.image});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +14,10 @@ class ProjectPerson extends StatelessWidget {
       backgroundColor: ColorManager.white,
       child: CircleAvatar(
         radius: 13.r,
-        backgroundImage: AssetImage(AppImages.profile),
+        backgroundImage:
+            image == null
+                ? AssetImage(AppImages.profile)
+                : NetworkImage(image!),
       ),
     );
   }

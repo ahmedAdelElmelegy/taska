@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:intl/intl.dart';
 import 'package:taska/core/function/app_fun.dart';
 import 'package:taska/core/helper/app_constants.dart';
 import 'package:taska/core/helper/extentions.dart';
@@ -12,14 +13,28 @@ import 'package:taska/core/widgets/custom_btn.dart';
 import 'package:taska/core/widgets/out_line_btn.dart';
 import 'package:taska/core/widgets/project_person.dart';
 import 'package:taska/core/widgets/svg_icon.dart';
-import 'package:taska/data/body/sub_task_model.dart';
-import 'package:taska/features/sub_task/widgets/status_item.dart';
+import 'package:taska/data/model/body/sub_task_model.dart';
+import 'package:taska/data/model/body/task_model.dart';
+import 'package:taska/features/sub_task/widgets/task_status_bottm_sheet.dart';
 import 'package:taska/features/sub_task/widgets/subtask_item.dart';
 import 'package:taska/features/teams/teams_screen.dart';
 
-class SubTaskList extends StatelessWidget {
-  const SubTaskList({super.key});
+class TaskDetialsContent extends StatefulWidget {
+  final TaskModel taskModel;
+  const TaskDetialsContent({super.key, required this.taskModel});
 
+  @override
+  State<TaskDetialsContent> createState() => _TaskDetialsContentState();
+}
+
+class _TaskDetialsContentState extends State<TaskDetialsContent> {
+  @override
+  void initState() {
+    super.initState();
+    currentIndex = Constants.status.indexOf(widget.taskModel.status ?? '');
+  }
+
+  int currentIndex = 0;
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -30,7 +45,14 @@ class SubTaskList extends StatelessWidget {
             child: Row(
               children: [
                 horizontalSpace(36),
-                Row(children: List.generate(5, (index) => ProjectPerson())),
+                Row(
+                  children: List.generate(
+                    widget.taskModel.teamMember!.length,
+                    (index) => ProjectPerson(
+                      image: widget.taskModel.teamMember![index].imageUrl,
+                    ),
+                  ),
+                ),
                 Spacer(),
                 GestureDetector(
                   onTap: () {
@@ -53,10 +75,10 @@ class SubTaskList extends StatelessWidget {
             child: Row(
               children: [
                 horizontalSpace(29),
-                ProjectPerson(),
+                ProjectPerson(image: widget.taskModel.coverImage),
                 horizontalSpace(4),
                 Text(
-                  ' Daniel Austin (you)',
+                  widget.taskModel.projectLeader!.fullName,
                   style: TextStyles.f16Regular.copyWith(
                     color: ColorManager.black,
                   ),
@@ -74,19 +96,13 @@ class SubTaskList extends StatelessWidget {
               children: [
                 horizontalSpace(38),
                 PrimaryOutLineBtn(
-                  text: 'To-Do',
+                  text: widget.taskModel.status!,
                   onPressed: () async {
                     await defaultBottomSheet(
                       context,
                       title: 'Status',
-                      child: Column(
-                        children: List.generate(
-                          Constants.status.length,
-                          (index) => Padding(
-                            padding: EdgeInsets.only(bottom: 36.h),
-                            child: StatusItem(title: Constants.status[index]),
-                          ),
-                        ),
+                      child: TaskStatusBottomSheet(
+                        currentStatus: widget.taskModel.status!,
                       ),
                     );
                   },
@@ -105,9 +121,9 @@ class SubTaskList extends StatelessWidget {
               children: [
                 horizontalSpace(18),
                 Text(
-                  'Due date : Dec 14,2024',
+                  'Due date:  ${DateFormat('MMM dd, yyyy').format(widget.taskModel.dueDate!)}', // 'Due date : Dec 14,2024',
                   style: TextStyles.f14SemiBold.copyWith(
-                    color: ColorManager.grey,
+                    color: ColorManager.black,
                   ),
                 ),
                 horizontalSpace(8),
@@ -141,7 +157,12 @@ class SubTaskList extends StatelessWidget {
                 horizontalSpace(18),
                 Expanded(
                   flex: 4,
-                  child: PrimaryOutLineBtn(text: 'References.pdf'),
+                  child: PrimaryOutLineBtn(
+                    text:
+                        '${widget.taskModel.attachment!.split('.').last.toLowerCase()}.',
+                    // onPressed: () {},
+                    width: 70.w,
+                  ),
                 ),
                 horizontalSpace(8),
                 Expanded(
